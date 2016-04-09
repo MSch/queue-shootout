@@ -11,14 +11,11 @@ SQL
 
 class QuePerpetualJob < Que::Job
   def run
-    Que.execute "begin"
     self.class.enqueue
-    destroy
-    Que.execute "commit"
   end
 end
 
 QUEUES[:que] = {
-  :setup => -> { Que.connection = NEW_PG.call },
+  :setup => -> { Que.connection = $pg },
   :work  => -> { Que::Job.work }
 }

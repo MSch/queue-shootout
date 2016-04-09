@@ -14,7 +14,7 @@ task :default do
 
   QUEUES = {}
 
-  DATABASE_URL = ENV['DATABASE_URL'] || 'postgres://postgres:@localhost/que-test'
+  DATABASE_URL = ENV['DATABASE_URL'] || 'postgres://postgres:@localhost/queue-shootout'
   DATABASE_URI = URI.parse(DATABASE_URL)
 
   NEW_PG = -> do
@@ -36,7 +36,7 @@ task :default do
   $redis = Redis.new :url    => ENV['REDIS_URL'],
                      :driver => :hiredis
 
-  %w(delayed_job queue_classic que).each { |queue| require "./queues/#{queue}" }
+  %w(queue_classic que).each { |queue| require "./queues/#{queue}" }
 
   $pg.async_exec "ANALYZE"
 
@@ -95,6 +95,7 @@ task :default do
 
           Process.waitall
         else
+          $pg = NEW_PG.call
           # We're a child/worker process. First, establish connections.
           procs[:setup].call
 

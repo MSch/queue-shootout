@@ -38,7 +38,7 @@ task :default do
 
   %w(queue_classic que).each { |queue| require "./queues/#{queue}" }
 
-  $pg.async_exec "ANALYZE"
+  $pg.async_exec "VACUUM FULL"
 
 
 
